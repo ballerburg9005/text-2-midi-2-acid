@@ -113,7 +113,8 @@ def text_to_event_queue(text):
             continue
 
         if ch_lower not in ENCODABLE:
-            char_timing.append((current_time, i, ch))
+            # Skip console output for non-encodable characters, but advance time
+            current_time += 1
             continue
 
         # Bassline (TB303 device)
@@ -171,17 +172,16 @@ def play_event_queue(midiouts, event_queue, char_queue):
         events = [(e[0], e[1], e[2], e[3], e[4] if len(e) > 4 else 0) for e in event_queue]
         events.sort(key=lambda x: x[0])
 
-        char_ready_ticks = {i: tick for tick, i, _ in char_queue}
-        text_order = [ch for _, _, ch in char_queue]
-
         event_ptr = 0
+        char_ptr = 0
         tick = 0
-        max_tick = max([e[0] for e in events] + list(char_ready_ticks.values()), default=0) + 1
+        max_tick = max([e[0] for e in events] + [t for t, _, _ in char_queue], default=0) + 1
 
         while tick <= max_tick:
-            if char_queue and char_ready_ticks.get(len(text_order) - len(char_queue)) <= tick:
-                _, _, ch = char_queue.pop(0)
+            while char_ptr < len(char_queue) and char_queue[char_ptr][0] <= tick:
+                _, _, ch = char_queue[char_ptr]
                 print(ch, end='', flush=True)
+                char_ptr += 1
 
             while event_ptr < len(events) and events[event_ptr][0] == tick:
                 _, device, action, value, param = events[event_ptr]
