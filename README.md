@@ -10,6 +10,7 @@ Then you can map the virtual devices in Wine or elsewhere to your synths.
 ### Installation & Running
 
 1. Install **rtmidi** and **mididings** via pip or package manager
-2. run 2spawnmidi in background, e.g. via screen
+2. put 2spawnmidi and 2spawnmidiports into /usr/local/bin/
+3. run 2spawnmidi in background, e.g. with "screen 2spawnmidiports"
 4. launch Wine or DAW and set up routing to your synths
 5. run acid2midi.py
