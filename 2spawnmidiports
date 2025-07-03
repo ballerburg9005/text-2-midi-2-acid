@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+import sys
+from mididings import *
+from mididings.engine import run
+
+# Get command-line argument for device number
+if len(sys.argv) > 1 and sys.argv[1].isdigit():
+    device_num = int(sys.argv[1])
+else:
+    device_num = 1
+
+client_name = f"virtual-{device_num}"
+
+config(
+    backend='alsa',
+    client_name=client_name
+)
+
+# Create a simple MIDI pass-through using the default port
+run([
+    Pass()  # Pass MIDI events through the default client port
+])
